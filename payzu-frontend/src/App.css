@@ -162,3 +162,9 @@
 .transac__link {
   color: rgb(0, 162, 255);
 }
+
+@media screen and (max-width: 550px) {
+  .header__main {
+    flex-direction: column;
+  }
+}

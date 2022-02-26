@@ -7,7 +7,7 @@ const Header = () => {
   return (
     <div className="header__main display__flex space__between">
       <div className="header__left">
-        <h1>PayZu</h1>
+        <h1>PayZu.</h1>
       </div>
       <div className="header__right display__flex">
         <button className=" button__primary header__buttons">

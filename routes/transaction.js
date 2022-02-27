@@ -13,12 +13,13 @@ router.post('/getTransactions', async (req, res) => {
 
 router.post('/addTransaction', async (req, res) => {
     try {
-        const { transactionHash, fromAddress, toAddress, amount } = req.body;
+        const { transactionHash, fromAddress, toAddress, amount, timestamp } = req.body;
         const transaction = new Transaction({
-            transactionHash, fromAddress, toAddress, amount
+            transactionHash, fromAddress, toAddress, amount, timestamp
         })
         await transaction.save()
-        res.json({ transaction });
+        const transactions = await Transaction.find({ fromAddress: fromAddress })
+        res.json(transactions)
     } catch (error) {
         console.log(error);
     }

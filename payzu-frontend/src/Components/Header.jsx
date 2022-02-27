@@ -1,18 +1,50 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
+import { TransactionContext } from "../context/TransactionContext";
 
 const Header = () => {
   const [transactionShow, setTransactionShow] = useState(false);
   const [accountOptions, setAccountOptions] = useState(false);
+  const [userName, setUserName] = useState("");
+  const {
+    connectWallet,
+    currentAccount,
+    getAccount,
+    userData,
+    changeUserName,
+    transactions,
+    deleteTransactions,
+  } = useContext(TransactionContext);
+  const [name, setName] = useState("");
+
+  useEffect(() => {
+    if (currentAccount !== undefined) {
+      getAccount();
+      setUserName(
+        `${currentAccount.slice(0, 7)}...${currentAccount.slice(40)}`
+      );
+    }
+  }, [currentAccount]);
+
+  useEffect(() => {
+    setName(userData.user.name);
+  }, [accountOptions]);
+
   return (
     <div className="header__main display__flex space__between">
       <div className="header__left">
         <h1>PayZu.</h1>
       </div>
       <div className="header__right display__flex">
-        <button className=" button__primary header__buttons">
-          Connect Wallet
-        </button>
+        {userName ? (
+          <div className="button__primary header__buttons">{userName}</div>
+        ) : (
+          <button
+            className=" button__primary header__buttons"
+            onClick={() => connectWallet()}
+          >
+            Connect Wallet
+          </button>
+        )}
         <button
           className="button__secondary header__buttons"
           onClick={() => setTransactionShow(true)}
@@ -27,18 +59,30 @@ const Header = () => {
           <AccountOptions
             accountOptions={accountOptions}
             setAccountOptions={setAccountOptions}
+            name={name}
+            setName={setName}
+            changeUserName={changeUserName}
+            deleteTransactions={deleteTransactions}
           />
         </div>
       </div>
       <TransactionHistory
         transactionShow={transactionShow}
         setTransactionShow={setTransactionShow}
+        transactions={transactions}
       />
     </div>
   );
 };
 
-const AccountOptions = ({ accountOptions, setAccountOptions }) => {
+const AccountOptions = ({
+  accountOptions,
+  setAccountOptions,
+  name,
+  setName,
+  changeUserName,
+  deleteTransactions,
+}) => {
   return (
     <div
       className={
@@ -59,20 +103,37 @@ const AccountOptions = ({ accountOptions, setAccountOptions }) => {
       <br></br>
       <p>Your username :</p>
       <div className="input__box display__flex">
-        <input className="setting__input" placeholder="UserName"></input>
+        <input
+          className="setting__input"
+          placeholder="UserName"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        ></input>
       </div>
       <br></br>
-      <button className="button__primary account__button">Save</button>
+      <button
+        className="button__primary account__button"
+        onClick={() => changeUserName(name)}
+      >
+        Save
+      </button>
       <br></br>
       <br></br>
-      <button className="button__secondary account__button">
+      <button
+        className="button__secondary account__button"
+        onClick={() => deleteTransactions()}
+      >
         Clear Transactions
       </button>
     </div>
   );
 };
 
-const TransactionHistory = ({ transactionShow, setTransactionShow }) => {
+const TransactionHistory = ({
+  transactionShow,
+  setTransactionShow,
+  transactions,
+}) => {
   return (
     <div
       className={
@@ -92,25 +153,31 @@ const TransactionHistory = ({ transactionShow, setTransactionShow }) => {
         </svg>
         <h1>Transactions</h1>
       </div>
-      <div className="transaction__info">
-        <p>
-          <b>0.01 Eth</b>
-          {" to "}
-          <span className="t_addr">0x819189182983hfwef7r45h2</span>
-        </p>
-        <a href="https://" className="transac__link">
-          Check this Transaction ➡️
-        </a>
-      </div>
-      <div className="transaction__info">
-        <p>
-          <b>2.00 Eth</b>
-          {" to "}
-          <span className="t_addr">0x81918918298900ef7r45h2s</span>
-        </p>
-        <a href="https://" className="transac__link">
-          Check this Transaction ➡️
-        </a>
+      <div className="transaction__info__cont">
+        {transactions.length !== 0 ? (
+          transactions.map((transaction) => {
+            const { transactionHash, toAddress, amount } = transaction;
+            return (
+              <div className="transaction__info">
+                <p>
+                  <b>{amount} Eth</b>
+                  {" to "}
+                  <span className="t_addr">{toAddress}</span>
+                </p>
+                <a
+                  href={`https://rinkeby.etherscan.io/tx/${transactionHash}`}
+                  className="transac__link"
+                  target={"_blank"}
+                  rel="noreferrer"
+                >
+                  Check this Transaction ➡️
+                </a>
+              </div>
+            );
+          })
+        ) : (
+          <p>No transactions for this address</p>
+        )}
       </div>
     </div>
   );

@@ -5,7 +5,6 @@ const User = require('../models/User');
 
 router.post('/getData', async (req, res) => {
     try {
-        console.log(req.body);
         let user = await User.findOne({ address: req.body.address });
         if (!user) {
             user = await User.create({

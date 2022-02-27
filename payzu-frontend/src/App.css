@@ -109,7 +109,7 @@
 }
 .payment__input:focus {
   outline: none;
-  border-bottom: 1px solid #000;
+  border-left: 1px solid #000;
 }
 .eth__logo {
   width: 5%;
@@ -124,6 +124,16 @@
   margin: 10px;
 }
 /*Transaction History*/
+.transaction__info__cont {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-direction: column;
+  overflow: scroll;
+}
+.transaction__info__cont::-webkit-scrollbar {
+  display: none;
+}
 .transactions__history {
   position: fixed;
   top: 0;
@@ -166,5 +176,8 @@
 @media screen and (max-width: 550px) {
   .header__main {
     flex-direction: column;
+  }
+  .t_addr {
+    font-size: 12px;
   }
 }

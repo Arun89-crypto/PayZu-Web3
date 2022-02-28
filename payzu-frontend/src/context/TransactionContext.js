@@ -35,10 +35,10 @@ export const TransactionProvider = ({ children }) => {
     const [transactions, setTransactions] = useState([]);
     const [balance, setBalance] = useState(0.0);
 
-    window.ethereum.on('accountsChanged', async (accounts) => {
-        // Time to reload your interface with accounts[0]!
+    (Eth) && window.ethereum.on('accountsChanged', async (accounts) => {
         try {
             setCurrentAccount(accounts[0])
+            getAccount();
             showalert("Wallet Changed ✅")
         } catch (error) {
             console.log(error);
@@ -53,6 +53,7 @@ export const TransactionProvider = ({ children }) => {
                 setCurrentAccount(accounts[0]);
                 console.log("Wallet is connected");
                 showalert("Wallet Connected :)")
+                getAccount();
                 getTransactions();
                 getAccountBalance();
             }
@@ -83,6 +84,7 @@ export const TransactionProvider = ({ children }) => {
             const accounts = await Metamask.request({ method: 'eth_requestAccounts' })
             setCurrentAccount(accounts[0]);
             showalert("Wallet Connected :)")
+            getAccount();
             getTransactions();
             getAccountBalance();
         } catch (error) {
@@ -127,6 +129,7 @@ export const TransactionProvider = ({ children }) => {
             await addTransaction(transactionHash.hash, connectedAccount, addressTo, parseFloat(amount), new Date(Date.now()).toISOString())
             setLoading(false);
             showalert("Transaction Done 🚀")
+            getAccountBalance();
         } catch (error) {
             setLoading(false);
             showalert("Some Error Occured")
@@ -163,6 +166,7 @@ export const TransactionProvider = ({ children }) => {
     const URL = "https://payzu-backend.herokuapp.com"
 
     const getAccount = async () => {
+        setLoading(true);
         const response = await fetch(`${URL}/api/auth/getData`, {
             method: 'POST',
             headers: {
@@ -172,6 +176,7 @@ export const TransactionProvider = ({ children }) => {
         })
         const res = await response.json();
         setUserData(res)
+        setLoading(false);
     }
 
     const changeUserName = async (name) => {

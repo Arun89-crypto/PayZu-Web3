@@ -1,10 +1,12 @@
 const mongoose = require('mongoose');
-const mongoURI = "mongodb://localhost:27017/payzu?readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false"
+require('dotenv').config();
+const mongoURI = process.env.DB_LINK
 
 const connectToMongo = () => {
-    mongoose.connect(mongoURI, () => {
-        console.log("Connected to mongoDB successfully....");
-    })
+    mongoose.connect(mongoURI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+    }).then(() => console.log('Connected to the mongo database.......')).catch((err) => console.log(err))
 }
 
 module.exports = connectToMongo;

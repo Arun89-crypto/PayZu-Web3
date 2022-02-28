@@ -131,7 +131,7 @@ export const TransactionProvider = ({ children }) => {
     // Database Functions
     // -------------------------------
 
-    const URL = "http://localhost:8000"
+    const URL = "https://payzu-backend.herokuapp.com"
 
     const getAccount = async () => {
         const response = await fetch(`${URL}/api/auth/getData`, {

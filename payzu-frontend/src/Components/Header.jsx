@@ -23,10 +23,12 @@ const Header = () => {
         `${currentAccount.slice(0, 7)}...${currentAccount.slice(40)}`
       );
     }
+    // eslint-disable-next-line
   }, [currentAccount]);
 
   useEffect(() => {
     setName(userData.user.name);
+    // eslint-disable-next-line
   }, [accountOptions]);
 
   return (
@@ -53,9 +55,20 @@ const Header = () => {
         </button>
         <div className="avatar">
           <div
-            className="avatar__logo"
+            className="avatar__logo display__flex"
             onClick={() => setAccountOptions(true)}
-          ></div>
+            style={{
+              background: `${
+                currentAccount !== undefined
+                  ? "linear-gradient(204deg,rgba(255, 70, 151, 1) 0%,rgba(0, 116, 255, 1) 100%)"
+                  : "rgb(204, 204, 204)"
+              }`,
+              color: `${currentAccount !== undefined ? "#fff" : "#000"}`,
+              fontWeight: "bold",
+            }}
+          >
+            {name[0]}
+          </div>
           <AccountOptions
             accountOptions={accountOptions}
             setAccountOptions={setAccountOptions}
@@ -158,7 +171,7 @@ const TransactionHistory = ({
           transactions.map((transaction) => {
             const { transactionHash, toAddress, amount } = transaction;
             return (
-              <div className="transaction__info">
+              <div className="transaction__info" key={transaction._id}>
                 <p>
                   <b>{amount} Eth</b>
                   {" to "}

@@ -39,6 +39,7 @@ export const TransactionProvider = ({ children }) => {
         // Time to reload your interface with accounts[0]!
         try {
             setCurrentAccount(accounts[0])
+            showalert("Wallet Changed ✅")
         } catch (error) {
             console.log(error);
         }
@@ -51,6 +52,7 @@ export const TransactionProvider = ({ children }) => {
             if (accounts.length) {
                 setCurrentAccount(accounts[0]);
                 console.log("Wallet is connected");
+                showalert("Wallet Connected :)")
                 getTransactions();
                 getAccountBalance();
             }
@@ -72,6 +74,7 @@ export const TransactionProvider = ({ children }) => {
 
     useEffect(() => {
         checkWalletConnection();
+        // eslint-disable-next-line
     }, [currentAccount])
 
     const connectWallet = async (Metamask = Eth) => {
@@ -79,6 +82,7 @@ export const TransactionProvider = ({ children }) => {
             if (!Metamask) return alert("Please install metamask")
             const accounts = await Metamask.request({ method: 'eth_requestAccounts' })
             setCurrentAccount(accounts[0]);
+            showalert("Wallet Connected :)")
             getTransactions();
             getAccountBalance();
         } catch (error) {
@@ -97,7 +101,7 @@ export const TransactionProvider = ({ children }) => {
             const { addressTo, amount } = formData;
             const TransactionContract = EthereumContract();
             const parsedAmount = ethers.utils.parseEther(amount);
-
+            setLoading(true);
             await Metamask.request({
                 method: 'eth_sendTransaction',
                 params: [
@@ -121,10 +125,35 @@ export const TransactionProvider = ({ children }) => {
             await transactionHash.wait()
 
             await addTransaction(transactionHash.hash, connectedAccount, addressTo, parseFloat(amount), new Date(Date.now()).toISOString())
-
+            setLoading(false);
+            showalert("Transaction Done 🚀")
         } catch (error) {
+            setLoading(false);
+            showalert("Some Error Occured")
             console.log(error);
         }
+    }
+
+
+    // -------------------------------
+    // Loading Functions
+    // -------------------------------
+
+    const [loading, setLoading] = useState(false);
+
+    // -------------------------------
+    // Alert Tools
+    // -------------------------------
+
+    const [Alert, setAlert] = useState(false);
+    const [message, setMessage] = useState('');
+    const showalert = (message) => {
+        setMessage(message);
+        setAlert(true);
+        setTimeout(() => {
+            setAlert(false);
+            setMessage('');
+        }, 2500);
     }
 
     // -------------------------------
@@ -155,6 +184,7 @@ export const TransactionProvider = ({ children }) => {
         })
         const res = await response.json();
         setUserData(res);
+        showalert("Username Changed Successfully")
     }
 
     const getTransactions = async () => {
@@ -192,6 +222,7 @@ export const TransactionProvider = ({ children }) => {
         const res = await response.json();
         console.log(res);
         getTransactions();
+        showalert("Trnsaction Cleared Successfully")
     }
 
     return (
@@ -206,7 +237,10 @@ export const TransactionProvider = ({ children }) => {
             changeUserName,
             transactions,
             deleteTransactions,
-            balance
+            balance,
+            Alert,
+            message,
+            loading
         }}>
             {children}
         </TransactionContext.Provider>

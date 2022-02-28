@@ -3,10 +3,18 @@ import { useContext } from "react";
 import Ethereum from "../assets/ethereum.png";
 import Metamask from "../assets/metamask.png";
 import { TransactionContext } from "../context/TransactionContext";
+import { Triangle } from "react-loader-spinner";
 
 const PaymentWindow = () => {
-  const { formData, handleChange, sendTransaction, balance } =
-    useContext(TransactionContext);
+  const {
+    formData,
+    handleChange,
+    sendTransaction,
+    balance,
+    Alert,
+    message,
+    loading,
+  } = useContext(TransactionContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -47,6 +55,18 @@ const PaymentWindow = () => {
       >
         Pay Now
       </button>
+      <div className={Alert ? "alert" : "alert translated"}>
+        <h1>Alert!!</h1>
+        <h3>{message}</h3>
+      </div>
+      {loading && (
+        <div className="loader display__flex">
+          <div className="loader__main display__flex">
+            <Triangle ariaLabel="loading-indicator" color="#000" />
+            <p>Proccessing Payment</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
